@@ -25,16 +25,7 @@ public class FacultyService {
     public Faculty create(Faculty faculty) {
         return facultyRepository.save(faculty);
 
-//        Было раньше
-//
-//        Long id = faculty.getId();
-//        if (id != null && storage.containsKey(id)) {
-//            throw new FacultyAlreadyExistsException();
-//        }
-//        Long nextInt = COUNTER++;
-//        faculty.setId(nextInt);
-//        storage.put(nextInt, faculty);
-//        return faculty;
+
     }
 
     public Faculty update(Long id, Faculty faculty) {
@@ -44,14 +35,7 @@ public class FacultyService {
         existingFaculty.setName(faculty.getName());
         return facultyRepository.save(existingFaculty);
 
-//        Было раньше
-//
-//        if (!storage.containsKey(id)) {
-//            throw new FacultyNotFoundException();
-//        }
-//        faculty.setId(id);
-//        storage.put(id, faculty);
-//        return faculty;
+
     }
 
     public Faculty getById(Long id) {
@@ -69,22 +53,13 @@ public class FacultyService {
         facultyRepository.delete(faculty);
         return faculty;
 
-//        Было раньше
-//
-//        if (!storage.containsKey(id)) {
-//            throw new FacultyNotFoundException();
-//        }
-//        return storage.remove(id);
+
     }
 
     public Collection<Faculty> getAllByColor(String color) {
         return facultyRepository.findAllByColor(color);
 
-//        Было раньше
-//
-//        return storage.values().stream()
-//                .filter(f -> f.getColor().equalsIgnoreCase(color))
-//                .collect(Collectors.toList());
+
     }
 
     public Faculty getFacultyByNameOrColor(String name, String color) {
