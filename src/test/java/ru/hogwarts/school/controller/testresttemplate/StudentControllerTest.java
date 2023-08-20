@@ -15,6 +15,8 @@ import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,7 +40,6 @@ public class StudentControllerTest {
 
     @AfterEach
     void clearDb(){
-        facultyRepository.deleteAll();
         studentRepository.deleteAll();
     }
 
@@ -103,20 +104,24 @@ public class StudentControllerTest {
         assertThat(response.getBody().size()).isEqualTo(1);
     }
 
-//    @Test
-//    void byFaculty(){
-//        ResponseEntity<Student> response = createStudent("Ivan Ivanov", 20);
-//        Student expectedStudent = response.getBody();
-//        Faculty faculty = new Faculty();
-//        faculty.setStudents(expectedStudent);
-//        ResponseEntity<Faculty> facultyResponseEntity = template.postForEntity("/faculty", faculty, Faculty.class);
-//
-//        Long facultyIdId = facultyResponseEntity.getBody().getId();
-//        response = template.getForEntity("/student/by-faculty?facultyId="+ facultyIdId,Student.class);
-//        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-//        assertThat(response.getBody()).isNotNull();
-//        assertThat(response.getBody()).isEqualTo(expectedStudent);
-//    }
+    @Test
+    void byFaculty(){
+        Faculty faculty = new Faculty(null, "philosophy", "red");
+        ResponseEntity<Faculty> facultyResponseEntity = template.postForEntity("/faculty", faculty, Faculty.class);
+
+        Student student = new Student(null, "Ivan Ivanov", 20);
+        student.setFaculty(facultyResponseEntity.getBody());
+        ResponseEntity<Student> studentResponseEntity = template.postForEntity("/student", student, Student.class);
+
+        Long facultyId = facultyResponseEntity.getBody().getId();
+
+        ResponseEntity<Collection> students = template
+                .getForEntity("/student/by-faculty?facultyId=" + facultyId, Collection.class);
+
+        assertThat(students.getBody().isEmpty()).isFalse();
+        Map<String,String> resultStudent = (LinkedHashMap<String,String>) students.getBody().iterator().next();
+        assertThat(resultStudent.get("name")).isEqualTo("Ivan Ivanov");
+    }
 
     private ResponseEntity<Student> createStudent(String name, int age) {
         Student request = new Student();

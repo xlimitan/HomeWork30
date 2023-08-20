@@ -42,6 +42,21 @@ public class FacultyControllerTest {
     ObjectMapper objectMapper;
 
     @Test
+    void getByFaculty() throws Exception {
+        Faculty faculty = new Faculty(1L, "philosophy", "red");
+        Student student = new Student(1L, "Ivan Ivanov", 22);
+        student.setFaculty(faculty);
+        when(studentRepository.findById(student.getId())).thenReturn(Optional.of(student));
+        mockMvc.perform(get("/faculty/by-student?studentId=" + student.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isMap())
+                .andExpect(jsonPath("$.id").value("1"))
+                .andExpect(jsonPath("$.name").value("philosophy"))
+                .andExpect(jsonPath("$.color").value("red"));
+    }
+
+    @Test
     void getById() throws Exception {
         Faculty faculty = new Faculty(1L, "history","red");
         when(facultyRepository.findById(1L)).thenReturn(Optional.of(faculty));

@@ -14,13 +14,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.hogwarts.school.controller.StudentController;
+import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.repository.AvatarRepository;
 import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.repository.StudentRepository;
 import ru.hogwarts.school.service.AvatarService;
 import ru.hogwarts.school.service.StudentService;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -42,6 +45,9 @@ public class StudentControllerTest {
 
     @MockBean
     FacultyRepository facultyRepository;
+
+    @MockBean
+    AvatarRepository avatarRepository;
 
     @MockBean
     AvatarService avatarService;
@@ -84,7 +90,7 @@ public class StudentControllerTest {
         when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
         when(studentRepository.save(any(Student.class))).thenReturn(student);
 
-        mockMvc.perform(put("/student/"+ student.getId())
+        mockMvc.perform(put("/student/" + student.getId())
                         .content(objectMapper.writeValueAsString(student))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -99,7 +105,7 @@ public class StudentControllerTest {
         Student student = new Student(1L, "Ivan Ivanov", 20);
         when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
 
-        mockMvc.perform(delete("/student/"+ student.getId())
+        mockMvc.perform(delete("/student/" + student.getId())
                         .content(objectMapper.writeValueAsString(student))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -111,7 +117,7 @@ public class StudentControllerTest {
 
     @Test
     void ageBetween() throws Exception {
-        when(studentRepository.findAllByAgeBetween(0,20)).thenReturn(Arrays.asList(
+        when(studentRepository.findAllByAgeBetween(0, 20)).thenReturn(Arrays.asList(
                 new Student(1L, "Ivan Ivanov", 20),
                 new Student(2L, "Roman Romanov", 25)
         ));
@@ -123,5 +129,24 @@ public class StudentControllerTest {
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.[0].id").value(1L))
                 .andExpect(jsonPath("$.[1].id").value(2L));
+    }
+
+    @Test
+    void getByFaculty() throws Exception {
+        List<Student> students = Arrays.asList(
+                new Student(1L, "Ivan Ivanov", 22),
+                new Student(2L, "Roman Romanov", 24));
+        Faculty faculty = new Faculty(1L, "philosophy", "red");
+        faculty.setStudents(students);
+        when(facultyRepository.findById(1L)).thenReturn(Optional.of(faculty));
+
+        mockMvc.perform(get("/student/by-faculty?facultyId=" + faculty.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.[0].id").value(1L))
+                .andExpect(jsonPath("$.[0].name").value("Ivan Ivanov"))
+                .andExpect(jsonPath("$.[1].id").value(2L))
+                .andExpect(jsonPath("$.[1].name").value("Roman Romanov"));
     }
 }

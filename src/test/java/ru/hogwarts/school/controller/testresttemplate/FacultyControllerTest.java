@@ -43,6 +43,7 @@ public class FacultyControllerTest {
         facultyRepository.deleteAll();
     }
 
+
     @Test
     void create(){
         ResponseEntity<Faculty> response = createFaculty("math", "blue");
