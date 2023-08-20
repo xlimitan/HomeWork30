@@ -5,21 +5,27 @@ import ru.hogwarts.school.exception.FacultyNotFoundException;
 import ru.hogwarts.school.exception.StudentNotFoundException;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.repository.AvatarRepository;
 import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.repository.StudentRepository;
 
+import javax.transaction.Transactional;
 import java.util.Collection;
+import java.util.List;
 
 
 @Service
 public class StudentService {
     private final StudentRepository studentRepository;
     private final FacultyRepository facultyRepository;
+    private final AvatarRepository avatarRepository;
 
     public StudentService(StudentRepository studentRepository,
-                          FacultyRepository facultyRepository) {
+                          FacultyRepository facultyRepository,
+                          AvatarRepository avatarRepository) {
         this.studentRepository = studentRepository;
         this.facultyRepository = facultyRepository;
+        this.avatarRepository = avatarRepository;
     }
 
     public Student create(Student student) {
@@ -61,7 +67,9 @@ public class StudentService {
         return studentRepository.findAll();
     }
 
+    @Transactional
     public Student remove(Long id) {
+        avatarRepository.deleteByStudent_id(id);
         Student student = studentRepository.findById(id)
                 .orElseThrow(StudentNotFoundException::new);
         studentRepository.delete(student);
@@ -89,9 +97,21 @@ public class StudentService {
         return studentRepository.findAllByAgeBetween(minAge, maxAge);
     }
 
-    public Collection<Student> getByFaculty(Long facultyId){
+    public Collection<Student> getByFaculty(Long facultyId) {
         return facultyRepository.findById(facultyId)
                 .map(Faculty::getStudents)
                 .orElseThrow(FacultyNotFoundException::new);
+    }
+
+    public Long count() {
+        return studentRepository.countAll();
+    }
+
+    public Double avarageAge() {
+        return studentRepository.averageAge();
+    }
+
+    public List<Student> getLastStudent(int num) {
+        return studentRepository.findLastStudent(num);
     }
 }

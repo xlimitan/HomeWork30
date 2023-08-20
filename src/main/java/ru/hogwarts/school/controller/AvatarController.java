@@ -3,10 +3,8 @@ package ru.hogwarts.school.controller;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import ru.hogwarts.school.dto.AvatarDto;
 import ru.hogwarts.school.model.Avatar;
 import ru.hogwarts.school.service.AvatarService;
 
@@ -14,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/avatar")
@@ -50,5 +49,10 @@ public class AvatarController {
         headers.setContentLength(avatar.getFileSize());
 //        Возвращаем ответ
         return ResponseEntity.status(200).headers(headers).body(avatar.getData());
+    }
+
+    @GetMapping("/page")
+    public List<AvatarDto> getPage(@RequestParam int num) {
+        return avatarService.getPage(num);
     }
 }

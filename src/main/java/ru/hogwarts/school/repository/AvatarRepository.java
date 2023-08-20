@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface AvatarRepository extends JpaRepository<Avatar, Long> {
     Optional<Avatar> findFirstByStudent(Student student);
+
+    void deleteByStudent_id(Long StudentId);
 }
