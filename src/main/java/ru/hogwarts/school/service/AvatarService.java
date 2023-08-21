@@ -59,8 +59,8 @@ public class AvatarService {
         return avatar.getId();
     }
 
-    public List<AvatarDto> getPage(int num){
-        return avatarRepository.findAll(PageRequest.of(num,5))
+    public List<AvatarDto> getPage(int num, int size){
+        return avatarRepository.findAll(PageRequest.of(num,size))
                 .getContent()
                 .stream()
                 .map(a->new AvatarDto(a.getId(), a.getStudent().getId(), a.getStudent().getName()))

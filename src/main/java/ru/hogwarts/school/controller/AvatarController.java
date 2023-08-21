@@ -1,11 +1,13 @@
 package ru.hogwarts.school.controller;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.dto.AvatarDto;
 import ru.hogwarts.school.model.Avatar;
+import ru.hogwarts.school.repository.AvatarRepository;
 import ru.hogwarts.school.service.AvatarService;
 
 import javax.servlet.http.HttpServletResponse;
@@ -19,9 +21,12 @@ import java.util.List;
 public class AvatarController {
 
     private final AvatarService avatarService;
+    private final AvatarRepository avatarRepository;
 
-    public AvatarController(AvatarService avatarService) {
+    public AvatarController(AvatarService avatarService,
+                            AvatarRepository avatarRepository) {
         this.avatarService = avatarService;
+        this.avatarRepository = avatarRepository;
     }
 
     @GetMapping("/from-disk/{id}")
@@ -52,7 +57,9 @@ public class AvatarController {
     }
 
     @GetMapping("/page")
-    public List<AvatarDto> getPage(@RequestParam int num) {
-        return avatarService.getPage(num);
+    public List<AvatarDto> getPage(@RequestParam("page") Integer num,
+                                   @RequestParam("size") Integer size) {
+        return avatarService.getPage(num, size);
     }
+
 }
