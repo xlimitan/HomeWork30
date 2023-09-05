@@ -1,5 +1,7 @@
 package ru.hogwarts.school.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -9,6 +11,7 @@ import ru.hogwarts.school.dto.AvatarDto;
 import ru.hogwarts.school.model.Avatar;
 import ru.hogwarts.school.repository.AvatarRepository;
 import ru.hogwarts.school.service.AvatarService;
+import ru.hogwarts.school.service.FacultyService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
@@ -19,6 +22,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/avatar")
 public class AvatarController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AvatarController.class);
 
     private final AvatarService avatarService;
     private final AvatarRepository avatarRepository;
@@ -37,8 +42,8 @@ public class AvatarController {
         try(FileInputStream fis = new FileInputStream(avatar.getFilePath())) {
         fis.transferTo(response.getOutputStream());
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        } ;
+            logger.error("Failed to download avatar with id = "+id, e);
+        }
 
 
         }
