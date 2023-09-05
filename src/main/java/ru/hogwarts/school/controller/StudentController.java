@@ -87,4 +87,13 @@ public class StudentController {
     public List<Student> getLastFive(){
         return studentService.getLastStudent(5);
     }
+
+    @GetMapping("/names-by-first-symbol")
+    public List<String> getBySymbol(@RequestParam char symbol){
+        return studentService.getNamesStartedBy(symbol);
+    }
+    @GetMapping("/stream/average-age")
+    public double getAverageAge() {
+        return studentService.getAverageAge();
+    }
 }

@@ -1,5 +1,6 @@
 package ru.hogwarts.school.service;
 
+import org.apache.commons.lang3.CharUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import ru.hogwarts.school.repository.StudentRepository;
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -128,5 +130,18 @@ public class StudentService {
     public List<Student> getLastStudent(int num) {
         logger.info("Run method getLastStudent");
         return studentRepository.findLastStudent(num);
+    }
+    public List<String> getNamesStartedBy(char firstSymbol){
+        return studentRepository.findAll().stream()
+                .map(Student::getName)
+                .filter(n ->Character.toLowerCase(n.charAt(0))==Character.toLowerCase(firstSymbol))
+                .collect(Collectors.toList());
+    }
+    public double getAverageAge(){
+        return studentRepository.findAll()
+                .stream()
+                .mapToInt(Student::getAge)
+                .average()
+                .orElseThrow(StudentNotFoundException::new);
     }
 }
