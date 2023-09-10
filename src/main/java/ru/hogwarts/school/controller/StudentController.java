@@ -96,4 +96,14 @@ public class StudentController {
     public double getAverageAge() {
         return studentService.getAverageAge();
     }
+
+    @GetMapping("/print-all")
+    public void print(){
+        studentService.print();
+    }
+
+    @GetMapping("/print-all2")
+    public void print2(){
+        studentService.print2();
+    }
 }

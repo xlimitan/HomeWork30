@@ -131,17 +131,58 @@ public class StudentService {
         logger.info("Run method getLastStudent");
         return studentRepository.findLastStudent(num);
     }
-    public List<String> getNamesStartedBy(char firstSymbol){
+
+    public List<String> getNamesStartedBy(char firstSymbol) {
         return studentRepository.findAll().stream()
                 .map(Student::getName)
-                .filter(n ->Character.toLowerCase(n.charAt(0))==Character.toLowerCase(firstSymbol))
+                .filter(n -> Character.toLowerCase(n.charAt(0)) == Character.toLowerCase(firstSymbol))
                 .collect(Collectors.toList());
     }
-    public double getAverageAge(){
+
+    public double getAverageAge() {
         return studentRepository.findAll()
                 .stream()
                 .mapToInt(Student::getAge)
                 .average()
                 .orElseThrow(StudentNotFoundException::new);
     }
+
+    public void print() {
+        List<Student> students = studentRepository.findAll();
+        System.out.println(students.get(0).getName());
+        System.out.println(students.get(1).getName());
+
+        new Thread(() -> {
+            System.out.println(students.get(2).getName());
+            System.out.println(students.get(3).getName());
+
+        }).start();
+
+        new Thread(() -> {
+            System.out.println(students.get(4).getName());
+            System.out.println(students.get(5).getName());
+
+        }).start();
+    }
+    public void print2() {
+        List<Student> students = studentRepository.findAll();
+        prtSync(students.get(0).getName());
+        prtSync(students.get(1).getName());
+
+        new Thread(() -> {
+            prtSync(students.get(2).getName());
+            prtSync(students.get(3).getName());
+
+        }).start();
+
+        new Thread(() -> {
+            prtSync(students.get(4).getName());
+            prtSync(students.get(5).getName());
+
+        }).start();
+    }
+    private synchronized void prtSync(String name){
+        System.out.println(name);
+    }
+
 }
